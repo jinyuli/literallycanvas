@@ -2743,11 +2743,11 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
         return _this.setState(_this.getState());
       };
     })(this);
-    dashButtonClass = React.addons.classSet({
+    dashButtonClass = classNames({
       'basic-button square-button': true,
       'selected': this.state.isDashed
     });
-    arrowButtonClass = React.addons.classSet({
+    arrowButtonClass = classNames({
       'basic-button square-button': true,
       'selected': this.state.hasEndArrow
     });
@@ -2843,7 +2843,7 @@ ClearButton = React.createClass({
     var className, div, lc, onClick;
     div = React.DOM.div;
     lc = this.props.lc;
-    className = React.addons.classSet({
+    className = classNames({
       'lc-clear': true,
       'toolbar-button': true,
       'fat-button': true,
@@ -2918,7 +2918,7 @@ ColorWell = React.createClass({
         clear: 'both'
       }
     }, this.props.label), div({
-      className: React.addons.classSet({
+      className: classNames({
         'color-well-container': true,
         'selected': this.state.isPickerVisible
       }),
@@ -2955,7 +2955,7 @@ ColorWell = React.createClass({
             height: 20
           }
         }, div({
-          className: React.addons.classSet({
+          className: classNames({
             'color-cell transparent-cell': true,
             'selected': _this.state.color === 'transparent'
           }),
@@ -3002,7 +3002,7 @@ ColorWell = React.createClass({
           }
         }, row.map(function(cellColor, ix2) {
           var className;
-          className = React.addons.classSet({
+          className = classNames({
             'color-cell': true,
             'selected': _this.state.color === cellColor
           });
@@ -3050,7 +3050,8 @@ Options = React.createClass({
   render: function() {
     var style;
     style = "" + this.state.style;
-    return optionsStyles[style]({
+    //return optionsStyles[style]({
+    return React.createElement(optionsStyles[style], {
       lc: this.props.lc,
       tool: this.state.tool,
       imageURLPrefix: this.props.imageURLPrefix
@@ -3084,15 +3085,21 @@ ColorPickers = React.createClass({
     div = React.DOM.div;
     return div({
       className: 'lc-color-pickers'
-    }, ColorWell({
+    },
+        //ColorWell({
+        React.createElement(ColorWell, {
       lc: lc,
       colorName: 'background',
       label: _('background')
-    }), ColorWell({
+    }),
+        //ColorWell({
+        React.createElement(ColorWell, {
       lc: lc,
       colorName: 'primary',
       label: _('stroke')
-    }), ColorWell({
+    }),
+        //ColorWell({
+        React.createElement(ColorWell, {
       lc: lc,
       colorName: 'secondary',
       label: _('fill')
@@ -3115,6 +3122,19 @@ Picker = React.createClass({
       className: 'lc-picker-contents'
     }, toolButtonComponents.map((function(_this) {
       return function(component, ix) {
+        return React.createElement(component, {
+          lc: lc,
+          imageURLPrefix: imageURLPrefix,
+          key: ix,
+          isSelected: ix === _this.state.selectedToolIndex,
+          onSelect: function(tool) {
+            lc.setTool(tool);
+            return _this.setState({
+              selectedToolIndex: ix
+            });
+          }
+        });
+        /*
         return component({
           lc: lc,
           imageURLPrefix: imageURLPrefix,
@@ -3127,18 +3147,29 @@ Picker = React.createClass({
             });
           }
         });
+        */
       };
-    })(this)), toolButtonComponents.length % 2 !== 0 ? div({
+    })(this)), toolButtonComponents.length % 2 !== 0 ? /*div({
       className: 'toolbar-button thin-button disabled'
-    }) : void 0, UndoRedoButtons({
+    })*/React.createElement(div, {className: 'toolbar-button thin-button disabled'}) : void 0, /*UndoRedoButtons({
       lc: lc,
       imageURLPrefix: imageURLPrefix
-    }), ZoomButtons({
+    })*/ React.createElement(UndoRedoButtons, {
       lc: lc,
       imageURLPrefix: imageURLPrefix
-    }), ClearButton({
+    }), /*ZoomButtons({
+      lc: lc,
+      imageURLPrefix: imageURLPrefix
+    })*/React.createElement(ZoomButtons, {
+      lc: lc,
+      imageURLPrefix: imageURLPrefix
+    }), /*ClearButton({
       lc: lc
-    }), ColorPickers({
+    })*/React.createElement(ClearButton, {
+      lc: lc
+    }), /*ColorPickers({
+      lc: lc
+    })*/React.createElement(ColorPickers, {
       lc: lc
     }));
   }
@@ -3191,7 +3222,7 @@ module.exports = React.createClass({
     }, strokeWidths.map((function(_this) {
       return function(strokeWidth, ix) {
         var buttonClassName, buttonSize;
-        buttonClassName = React.addons.classSet({
+        buttonClassName = classNames({
           'basic-button': true,
           'selected': strokeWidth === _this.state.strokeWidth
         });
@@ -3253,7 +3284,7 @@ createUndoRedoButtonComponent = function(undoOrRedo) {
       _ref = React.DOM, div = _ref.div, img = _ref.img;
       _ref1 = this.props, lc = _ref1.lc, imageURLPrefix = _ref1.imageURLPrefix;
       title = undoOrRedo === 'undo' ? 'Undo' : 'Redo';
-      className = ("lc-" + undoOrRedo + " ") + React.addons.classSet({
+      className = ("lc-" + undoOrRedo + " ") + classNames({
         'toolbar-button': true,
         'thin-button': true,
         'disabled': !this.state.isEnabled
@@ -3297,7 +3328,8 @@ UndoRedoButtons = React.createClass({
     div = React.DOM.div;
     return div({
       className: 'lc-undo-redo'
-    }, UndoButton(this.props), RedoButton(this.props));
+    }, /*UndoButton(this.props), RedoButton(this.props)*/
+      React.createElement(UndoButton, this.props), React.createElement(RedoButton, this.props));
   }
 });
 
@@ -3335,7 +3367,7 @@ createZoomButtonComponent = function(inOrOut) {
       _ref = React.DOM, div = _ref.div, img = _ref.img;
       _ref1 = this.props, lc = _ref1.lc, imageURLPrefix = _ref1.imageURLPrefix;
       title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
-      className = ("lc-zoom-" + inOrOut + " ") + React.addons.classSet({
+      className = ("lc-zoom-" + inOrOut + " ") + classNames({
         'toolbar-button': true,
         'thin-button': true,
         'disabled': !this.state.isEnabled
@@ -3379,7 +3411,8 @@ ZoomButtons = React.createClass({
     div = React.DOM.div;
     return div({
       className: 'lc-zoom'
-    }, ZoomOutButton(this.props), ZoomInButton(this.props));
+    }, /*ZoomOutButton(this.props), ZoomInButton(this.props)*/
+      React.createElement(ZoomOutButton, this.props), React.createElement(ZoomInButton, this.props));
   }
 });
 
@@ -3433,7 +3466,7 @@ createToolButton = function(_arg) {
       var className, div, imageURLPrefix, img, isSelected, onSelect, src, _ref, _ref1;
       _ref = React.DOM, div = _ref.div, img = _ref.img;
       _ref1 = this.props, imageURLPrefix = _ref1.imageURLPrefix, isSelected = _ref1.isSelected, onSelect = _ref1.onSelect;
-      className = React.addons.classSet({
+      className = classNames({
         'lc-pick-tool': true,
         'toolbar-button': true,
         'thin-button': true,
@@ -3481,6 +3514,7 @@ init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
       }
     });
   });
+  /*
   React.renderComponent(Picker({
     lc: lc,
     toolButtonComponents: toolButtonComponents,
@@ -3490,6 +3524,16 @@ init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
     lc: lc,
     imageURLPrefix: imageURLPrefix
   }), optionsElement);
+  */
+  ReactDOM.render(React.createElement(Picker, {
+    lc: lc,
+    toolButtonComponents: toolButtonComponents,
+    imageURLPrefix: imageURLPrefix
+  }), pickerElement);
+  return ReactDOM.render(React.createElement(Options, {
+    lc: lc,
+    imageURLPrefix: imageURLPrefix
+  }), optionsElement)
 };
 
 module.exports = init;
